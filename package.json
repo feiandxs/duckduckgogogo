@@ -1,6 +1,6 @@
 {
   "name": "duckduckgogogo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "duckduckgo api using fetch api",
   "main": "index.js",
   "scripts": {
