@@ -142,6 +142,12 @@ export async function search(query: string, options?: SearchOptions): Promise<Se
       const [prefix, title, domain] = search.b.split('\t');
       bang = { prefix, title, domain };
     }
+
+    
+  if (options.count !== undefined && results.results.length >= options.count) {
+    break;
+  }
+
     results.results.push({
       title: search.t,
       description: decode(search.a),
