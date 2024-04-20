@@ -1,10 +1,10 @@
 {
   "name": "duckduckgogogo",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "duckduckgo api using fetch api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "nodemon --watch '**/*.ts' --exec 'ts-node' main.ts"
   },
   "author": "",

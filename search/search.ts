@@ -14,6 +14,8 @@ import type { SearchOptions,
 import type { NewsResult } from "../schema/news.schema";
 import type { VideoResult } from "../schema/video.schema";
 
+import{ getVQD, queryString } from './base';
+
 const defaultOptions: SearchOptions = {
   safeSearch: SafeSearchType.OFF,
   time: SearchTimeType.ALL,
@@ -45,43 +47,6 @@ export interface DecodeOptions extends CommonOptions {
 import { decode } from 'html-entities';
 
 
-
-
-
-
-export function queryString(query: Record<string, string>) {
-  return new URLSearchParams(query).toString();
-}
-
-
-export const VQD_REGEX = /vqd=['"](\d+-\d+(?:-\d+)?)['"]/;
-
-/**
- * Get the VQD of a search query.
- * @param query The query to search
- * @param ia The type(?) of search
- * @param options The options of the HTTP request
- * @returns The VQD
- */
-export async function getVQD(query: string, ia = 'web', options?: RequestInit): Promise<string> {
-  try {
-    const queryParams = new URLSearchParams({ q: query, ia });
-    const response = await fetch(`https://duckduckgo.com/?${queryParams.toString()}`, options);
-
-    if (!response.ok) {
-      throw new Error(`Failed to get the VQD for query "${query}". Status: ${response.status} - ${response.statusText}`);
-    }
-
-    const responseText = await response.text();
-    const vqd = VQD_REGEX.exec(responseText)?.[1];
-    if (!vqd) {
-      throw new Error(`Failed to extract the VQD from the response for query "${query}".`);
-    }
-    return vqd;
-  } catch (e) {
-    throw new Error(`Failed to get the VQD for query "${query}".`);
-  }
-}
 
 export async function search(query: string, options?: SearchOptions): Promise<SearchResults> {
   if (!query) throw new Error('Query cannot be empty!');
@@ -130,6 +95,7 @@ export async function search(query: string, options?: SearchOptions): Promise<Se
   method: 'GET'
   });
 
+
   if (!response.ok) {
     throw new Error(`Failed to fetch data from DuckDuckGo. Status: ${response.status} - ${response.statusText}`);
   }
@@ -174,6 +140,12 @@ export async function search(query: string, options?: SearchOptions): Promise<Se
       const [prefix, title, domain] = search.b.split('\t');
       bang = { prefix, title, domain };
     }
+
+
+  if (options.count !== undefined && results.results.length >= options.count) {
+    break;
+  }
+
     results.results.push({
       title: search.t,
       description: decode(search.a),

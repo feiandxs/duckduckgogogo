@@ -20,6 +20,7 @@ export interface SearchOptions {
    * Set this if you made a search with the same query.
    */
   vqd?: string;
+  count?: number;
 }
 
 export interface CallbackSearchResult {
