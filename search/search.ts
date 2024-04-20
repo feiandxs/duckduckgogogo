@@ -23,6 +23,7 @@ const defaultOptions: SearchOptions = {
   marketRegion: 'us'
 };
 
+import{ getVQD } from './base';
 
 const SEARCH_REGEX = /DDG\.pageLayout\.load\('d',(\[.+\])\);DDG\.duckbar\.load\('images'/;
 const IMAGES_REGEX = /;DDG\.duckbar\.load\('images', ({"ads":.+"vqd":{".+":"\d-\d+-\d+"}})\);DDG\.duckbar\.load\('news/;
@@ -45,43 +46,10 @@ export interface DecodeOptions extends CommonOptions {
 import { decode } from 'html-entities';
 
 
-
-
-
-
 export function queryString(query: Record<string, string>) {
   return new URLSearchParams(query).toString();
 }
 
-
-export const VQD_REGEX = /vqd=['"](\d+-\d+(?:-\d+)?)['"]/;
-
-/**
- * Get the VQD of a search query.
- * @param query The query to search
- * @param ia The type(?) of search
- * @param options The options of the HTTP request
- * @returns The VQD
- */
-export async function getVQD(query: string, ia = 'web', options?: RequestInit): Promise<string> {
-  try {
-    const queryParams = new URLSearchParams({ q: query, ia });
-    const response = await fetch(`https://duckduckgo.com/?${queryParams.toString()}`, options);
-
-    if (!response.ok) {
-      throw new Error(`Failed to get the VQD for query "${query}". Status: ${response.status} - ${response.statusText}`);
-    }
-
-    const responseText = await response.text();
-    const vqd = VQD_REGEX.exec(responseText)?.[1];
-    if (!vqd) {
-      throw new Error(`Failed to extract the VQD from the response for query "${query}".`);
-    }
-    return vqd;
-  } catch (e) {
-    throw new Error(`Failed to get the VQD for query "${query}".`);
-  }
-}
 
 export async function search(query: string, options?: SearchOptions): Promise<SearchResults> {
   if (!query) throw new Error('Query cannot be empty!');
