@@ -14,6 +14,8 @@ import type { SearchOptions,
 import type { NewsResult } from "../schema/news.schema";
 import type { VideoResult } from "../schema/video.schema";
 
+import{ getVQD, queryString } from './base';
+
 const defaultOptions: SearchOptions = {
   safeSearch: SafeSearchType.OFF,
   time: SearchTimeType.ALL,
@@ -23,7 +25,6 @@ const defaultOptions: SearchOptions = {
   marketRegion: 'us'
 };
 
-import{ getVQD } from './base';
 
 const SEARCH_REGEX = /DDG\.pageLayout\.load\('d',(\[.+\])\);DDG\.duckbar\.load\('images'/;
 const IMAGES_REGEX = /;DDG\.duckbar\.load\('images', ({"ads":.+"vqd":{".+":"\d-\d+-\d+"}})\);DDG\.duckbar\.load\('news/;
@@ -45,10 +46,6 @@ export interface DecodeOptions extends CommonOptions {
 
 import { decode } from 'html-entities';
 
-
-export function queryString(query: Record<string, string>) {
-  return new URLSearchParams(query).toString();
-}
 
 
 export async function search(query: string, options?: SearchOptions): Promise<SearchResults> {
@@ -98,6 +95,7 @@ export async function search(query: string, options?: SearchOptions): Promise<Se
   method: 'GET'
   });
 
+
   if (!response.ok) {
     throw new Error(`Failed to fetch data from DuckDuckGo. Status: ${response.status} - ${response.statusText}`);
   }
@@ -143,7 +141,7 @@ export async function search(query: string, options?: SearchOptions): Promise<Se
       bang = { prefix, title, domain };
     }
 
-    
+
   if (options.count !== undefined && results.results.length >= options.count) {
     break;
   }

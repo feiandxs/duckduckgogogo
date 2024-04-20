@@ -39,3 +39,8 @@ export async function getVQD(query: string, ia = 'web', options?: RequestInit): 
     throw new Error(err);
   }
 }
+
+
+export function queryString(query: Record<string, string>) {
+  return new URLSearchParams(query).toString();
+}
